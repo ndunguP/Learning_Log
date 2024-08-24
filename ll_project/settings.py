@@ -130,3 +130,24 @@ LOGIN_REDIRECT_URL = 'learning_logs:index'
 LOGOUT_REDIRECT_URL = 'learning_logs:index'
 LOGIN_URL = 'accounts:login'
 
+# Platform.sh settings.
+❶ from platformshconfig import Config
+config = Config()
+❷ if config.is_valid_platform():
+❸ ALLOWED_HOSTS.append('.platformsh.site')
+❹ if config.appDir:
+ STATIC_ROOT = Path(config.appDir) / 'static'
+❺ if config.projectEntropy:
+ SECRET_KEY = config.projectEntropy
+ if not config.in_build():
+❻ db_settings = config.credentials('database')
+ DATABASES = {
+ 'default': {
+ 'ENGINE': 'django.db.backends.postgresql',
+ 'NAME': db_settings['path'],
+ 'USER': db_settings['username'],
+ 'PASSWORD': db_settings['password'],
+ 'HOST': db_settings['host'],
+ 'PORT': db_settings['port'],
+ },
+ }
